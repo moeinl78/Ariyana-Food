@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">AriyanaFood</string>
     <string name="brand_name">Ariyana Food Application</string>
+    <string name="food_name">Hamburger</string>
+    <string name="food_type">US, Hamburger</string>
+    <string name="food_price">$12 VIP</string>
+    <string name="food_distance">12 miles from you</string>
+    <string name="number_of_rates">90 Ratings</string>
 </resources>
