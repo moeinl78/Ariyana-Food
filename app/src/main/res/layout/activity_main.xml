@@ -44,6 +44,34 @@
 
         </FrameLayout>
 
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textField"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:hint="Search for food:"
+            android:textColorHint="?attr/colorOnSecondary"
+            android:textColor="?attr/colorOnSecondary"
+            app:boxStrokeColor="?attr/colorOnSecondary"
+            app:hintTextColor="?attr/colorOnSecondary"
+            app:startIconDrawable="@drawable/ic_baseline_search_24"
+            app:startIconTint="?attr/colorOnSecondary"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
     </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycleMain"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+    />
 
 </LinearLayout>
