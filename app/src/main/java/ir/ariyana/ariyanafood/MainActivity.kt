@@ -1,8 +1,8 @@
 package ir.ariyana.ariyanafood
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.LinearLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ir.ariyana.ariyanafood.databinding.ActivityMainBinding
@@ -26,5 +26,10 @@ class MainActivity : AppCompatActivity() {
         val adapter = Adapter(itemList)
         binding.recycleMain.adapter = adapter
         binding.recycleMain.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
+
+        binding.addItem.setOnClickListener {
+            val intent = Intent(this, MainActivity2::class.java)
+            startActivity(intent)
+        }
     }
 }

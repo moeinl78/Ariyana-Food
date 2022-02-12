@@ -1,5 +1,7 @@
 package ir.ariyana.ariyanafood
 
+import android.text.Editable
+
 data class Item(
     val foodName: String,
     val foodType: String,
