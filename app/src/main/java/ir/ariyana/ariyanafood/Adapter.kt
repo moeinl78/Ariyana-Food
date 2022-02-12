@@ -10,7 +10,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 
-class Adapter(private val data : List<Item>) : RecyclerView.Adapter<Adapter.ViewHolder>() {
+class Adapter(private val data : ArrayList<Item>) : RecyclerView.Adapter<Adapter.ViewHolder>() {
 
     inner class ViewHolder(itemView : View, private val context : Context) : RecyclerView.ViewHolder(itemView) {
         val foodImage = itemView.findViewById<ImageView>(R.id.foodImage)
@@ -24,10 +24,10 @@ class Adapter(private val data : List<Item>) : RecyclerView.Adapter<Adapter.View
         fun bindData(position: Int) {
             foodName.text = data[position].foodName
             foodType.text = data[position].foodType
-            foodPrice.text = data[position].foodPrice
-            foodDistance.text = data[position].foodDistance
+            foodPrice.text = data[position].foodPrice + " VIP"
+            foodDistance.text = data[position].foodDistance + " Miles"
             ratingBar.rating = data[position].ratingBar
-            numberOfRates.text = data[position].numberOfRates
+            numberOfRates.text = data[position].numberOfRates + " Ratings"
             Glide
                 .with(context)
                 .load(data[position].foodImage)
