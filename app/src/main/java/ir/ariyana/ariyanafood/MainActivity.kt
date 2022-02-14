@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ir.ariyana.ariyanafood.databinding.ActivityMainBinding
 import ir.ariyana.ariyanafood.databinding.NewItemBinding
+import ir.ariyana.ariyanafood.databinding.RemoveItemBinding
 
 class MainActivity : AppCompatActivity(), Adapter.ItemEvents {
 
@@ -65,6 +66,18 @@ class MainActivity : AppCompatActivity(), Adapter.ItemEvents {
     }
 
     override fun onItemLongClicked() {
+        val dialog = AlertDialog.Builder(this).create()
+        val view = RemoveItemBinding.inflate(layoutInflater)
+        dialog.setView(view.root)
+        dialog.setCancelable(true)
+        dialog.show()
 
+        view.removeAccept.setOnClickListener {
+            
+        }
+
+        view.removeDecline.setOnClickListener {
+            dialog.dismiss()
+        }
     }
 }
