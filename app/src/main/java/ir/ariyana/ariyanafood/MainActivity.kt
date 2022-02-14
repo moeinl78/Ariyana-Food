@@ -1,11 +1,14 @@
 package ir.ariyana.ariyanafood
 
-import android.content.Intent
+import android.app.Dialog
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ir.ariyana.ariyanafood.databinding.ActivityMainBinding
+import ir.ariyana.ariyanafood.databinding.NewItemBinding
 
 class MainActivity : AppCompatActivity() {
 
@@ -28,8 +31,32 @@ class MainActivity : AppCompatActivity() {
         binding.recycleMain.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
 
         binding.addItem.setOnClickListener {
-            val intent = Intent(this, MainActivity2::class.java)
-            startActivity(intent)
+            val dialog = AlertDialog.Builder(this)
+            val view = NewItemBinding.inflate(layoutInflater)
+            dialog.setView(view.root)
+            dialog.setCancelable(true)
+            dialog.create()
+            dialog.show()
+
+            view.confirm.setOnClickListener {
+                if (view.nameInput.length() > 0 && view.typeInput.length() > 0 && view.priceInput.length() > 0 && view.distanceInput.length() > 0) {
+                    val foodName = view.nameInput.text.toString()
+                    val foodType = view.typeInput.text.toString()
+                    val foodPrice = view.priceInput.text.toString()
+                    val foodDistance = view.distanceInput.text.toString()
+                    val numOfRates = (1..1000).random().toString()
+                    val ratingBar = (1..5).random().toFloat()
+
+                    val randomURL = (1..4).random()
+                    val url = itemList[randomURL].foodImage
+
+                    val item = Item(foodName, foodType, foodPrice, foodDistance, url, ratingBar, numOfRates)
+                    adapter.addItem(item)
+                }
+                else {
+                    Toast.makeText(this, "please make sure to fill all inputs!", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 }
