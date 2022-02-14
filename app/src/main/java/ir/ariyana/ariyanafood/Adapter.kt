@@ -34,8 +34,9 @@ class Adapter(private val data : ArrayList<Item>, private val itemEvents : ItemE
                 .into(foodImage)
 
             itemView.setOnClickListener {
-                itemEvents.onItemClicked()
+                itemEvents.onItemClicked(data[adapterPosition], adapterPosition)
             }
+
             itemView.setOnLongClickListener {
                 // send item and item position to the interface
                 itemEvents.onItemLongClicked(data[adapterPosition], adapterPosition)
@@ -69,12 +70,17 @@ class Adapter(private val data : ArrayList<Item>, private val itemEvents : ItemE
         notifyItemRemoved(itemPosition)
     }
 
+    fun updateItem(item : Item, itemPosition: Int) {
+        data[itemPosition] = item
+        notifyItemChanged(itemPosition)
+    }
+
     interface ItemEvents {
         // 1. create interface in adapter
         // 2. get an object of interface in args of adapter
         // 3. fill object of interface with your data
         // 4. implementation in MainActivity
-        fun onItemClicked()
+        fun onItemClicked(item : Item, position: Int)
         fun onItemLongClicked(item : Item, position : Int)
     }
 }

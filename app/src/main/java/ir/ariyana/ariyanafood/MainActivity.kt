@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ir.ariyana.ariyanafood.databinding.ActivityMainBinding
 import ir.ariyana.ariyanafood.databinding.NewItemBinding
 import ir.ariyana.ariyanafood.databinding.RemoveItemBinding
+import ir.ariyana.ariyanafood.databinding.UpdateItemBinding
 
 class MainActivity : AppCompatActivity(), Adapter.ItemEvents {
 
@@ -27,7 +28,7 @@ class MainActivity : AppCompatActivity(), Adapter.ItemEvents {
             Item("Kebab", "Turkish", "$90", "15", "https://www.okokorecepten.nl/i/recepten/kookboeken/2015/echte-manen-dieet-2/doner-kebab-light-500.jpg", 5f, "1500"),
         )
 
-        adapter = Adapter(itemList, this)
+        adapter = Adapter(itemList.clone() as ArrayList<Item>, this)
         binding.recycleMain.adapter = adapter
         binding.recycleMain.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
 
@@ -62,8 +63,35 @@ class MainActivity : AppCompatActivity(), Adapter.ItemEvents {
         }
     }
 
-    override fun onItemClicked() {
-        Toast.makeText(this, "Short click on food!", Toast.LENGTH_SHORT).show()
+    override fun onItemClicked(item: Item, position: Int) {
+        val dialog = AlertDialog.Builder(this).create()
+        val view = UpdateItemBinding.inflate(layoutInflater)
+        dialog.setView(view.root)
+        dialog.setCancelable(true)
+        dialog.show()
+
+        view.updateNameInput.setText(item.foodName)
+        view.updateTypeInput.setText(item.foodType)
+        view.updatePriceInput.setText(item.foodPrice)
+        view.updateDistanceInput.setText(item.foodDistance)
+
+        view.updateConfirm.setOnClickListener {
+            if (view.updateNameInput.length() > 0 && view.updateTypeInput.length() > 0 && view.updatePriceInput.length() > 0 && view.updateDistanceInput.length() > 0){
+
+                val foodName = view.updateNameInput.text.toString()
+                val foodType = view.updateTypeInput.text.toString()
+                val foodPrice = view.updatePriceInput.text.toString()
+                val foodDistance = view.updateDistanceInput.text.toString()
+
+                val updatedItem = Item(foodName, foodType, foodPrice, foodDistance, item.foodImage, item.ratingBar, item.numberOfRates)
+
+                adapter.updateItem(updatedItem, position)
+                dialog.dismiss()
+            }
+            else {
+                Toast.makeText(this, "please enter valid data!", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     override fun onItemLongClicked(item : Item, position : Int) {
