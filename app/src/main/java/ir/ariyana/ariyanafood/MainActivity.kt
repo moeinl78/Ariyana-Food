@@ -13,6 +13,7 @@ import ir.ariyana.ariyanafood.databinding.RemoveItemBinding
 class MainActivity : AppCompatActivity(), Adapter.ItemEvents {
 
     lateinit var binding : ActivityMainBinding
+    lateinit var adapter : Adapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,7 +27,7 @@ class MainActivity : AppCompatActivity(), Adapter.ItemEvents {
             Item("Kebab", "Turkish", "$90", "15", "https://www.okokorecepten.nl/i/recepten/kookboeken/2015/echte-manen-dieet-2/doner-kebab-light-500.jpg", 5f, "1500"),
         )
 
-        val adapter = Adapter(itemList, this)
+        adapter = Adapter(itemList, this)
         binding.recycleMain.adapter = adapter
         binding.recycleMain.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
 
@@ -65,7 +66,7 @@ class MainActivity : AppCompatActivity(), Adapter.ItemEvents {
         Toast.makeText(this, "Short click on food!", Toast.LENGTH_SHORT).show()
     }
 
-    override fun onItemLongClicked() {
+    override fun onItemLongClicked(item : Item, position : Int) {
         val dialog = AlertDialog.Builder(this).create()
         val view = RemoveItemBinding.inflate(layoutInflater)
         dialog.setView(view.root)
@@ -73,7 +74,8 @@ class MainActivity : AppCompatActivity(), Adapter.ItemEvents {
         dialog.show()
 
         view.removeAccept.setOnClickListener {
-            
+            dialog.dismiss()
+            adapter.removeItem(item, position)
         }
 
         view.removeDecline.setOnClickListener {

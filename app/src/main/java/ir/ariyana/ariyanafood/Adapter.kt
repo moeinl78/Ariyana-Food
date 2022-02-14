@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 
@@ -37,20 +36,20 @@ class Adapter(private val data : ArrayList<Item>, private val itemEvents : ItemE
             itemView.setOnClickListener {
                 itemEvents.onItemClicked()
             }
-
             itemView.setOnLongClickListener {
-                itemEvents.onItemLongClicked()
+                // send item and item position to the interface
+                itemEvents.onItemLongClicked(data[adapterPosition], adapterPosition)
                 true
             }
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+    override fun onCreateViewHolder(parent : ViewGroup, viewType : Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.food_card, parent, false)
         return ViewHolder(view, parent.context)
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder : ViewHolder, position : Int) {
         holder.bindData(position)
     }
 
@@ -76,6 +75,6 @@ class Adapter(private val data : ArrayList<Item>, private val itemEvents : ItemE
         // 3. fill object of interface with your data
         // 4. implementation in MainActivity
         fun onItemClicked()
-        fun onItemLongClicked()
+        fun onItemLongClicked(item : Item, position : Int)
     }
 }
