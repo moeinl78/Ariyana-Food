@@ -7,10 +7,11 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 
-class Adapter(private val data : ArrayList<Item>) : RecyclerView.Adapter<Adapter.ViewHolder>() {
+class Adapter(private val data : ArrayList<Item>, private val itemEvents : ItemEvents) : RecyclerView.Adapter<Adapter.ViewHolder>() {
 
     inner class ViewHolder(itemView : View, private val context : Context) : RecyclerView.ViewHolder(itemView) {
         val foodImage = itemView.findViewById<ImageView>(R.id.foodImage)
@@ -32,6 +33,15 @@ class Adapter(private val data : ArrayList<Item>) : RecyclerView.Adapter<Adapter
                 .with(context)
                 .load(data[position].foodImage)
                 .into(foodImage)
+
+            itemView.setOnClickListener {
+                itemEvents.onItemClicked()
+            }
+
+            itemView.setOnLongClickListener {
+                itemEvents.onItemLongClicked()
+                true
+            }
         }
     }
 
@@ -48,8 +58,24 @@ class Adapter(private val data : ArrayList<Item>) : RecyclerView.Adapter<Adapter
         return data.size
     }
 
+    // call this function from adapter to add one item
     fun addItem(newItem : Item) {
         data.add(0, newItem)
         notifyItemInserted(0)
+    }
+
+    // call this function from adapter to remove one item
+    fun removeItem(item : Item, itemPosition : Int) {
+        data.remove(item)
+        notifyItemRemoved(itemPosition)
+    }
+
+    interface ItemEvents {
+        // 1. create interface in adapter
+        // 2. get an object of interface in args of adapter
+        // 3. fill object of interface with your data
+        // 4. implementation in MainActivity
+        fun onItemClicked()
+        fun onItemLongClicked()
     }
 }

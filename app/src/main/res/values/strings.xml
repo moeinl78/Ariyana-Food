@@ -8,4 +8,7 @@
     <string name="number_of_rates">90 Ratings</string>
     <string name="activity2_title">Add Item</string>
     <string name="submit_button">Confirm</string>
+    <string name="remove_alert">Are you sure, you want to delete this item?</string>
+    <string name="remove_accept">Yes</string>
+    <string name="remove_decline">No</string>
 </resources>

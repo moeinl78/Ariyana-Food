@@ -1,6 +1,5 @@
 package ir.ariyana.ariyanafood
 
-import android.app.Dialog
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
@@ -10,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ir.ariyana.ariyanafood.databinding.ActivityMainBinding
 import ir.ariyana.ariyanafood.databinding.NewItemBinding
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), Adapter.ItemEvents {
 
     lateinit var binding : ActivityMainBinding
 
@@ -26,16 +25,15 @@ class MainActivity : AppCompatActivity() {
             Item("Kebab", "Turkish", "$90", "15", "https://www.okokorecepten.nl/i/recepten/kookboeken/2015/echte-manen-dieet-2/doner-kebab-light-500.jpg", 5f, "1500"),
         )
 
-        val adapter = Adapter(itemList)
+        val adapter = Adapter(itemList, this)
         binding.recycleMain.adapter = adapter
         binding.recycleMain.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
 
         binding.addItem.setOnClickListener {
-            val dialog = AlertDialog.Builder(this)
+            val dialog = AlertDialog.Builder(this).create()
             val view = NewItemBinding.inflate(layoutInflater)
             dialog.setView(view.root)
             dialog.setCancelable(true)
-            dialog.create()
             dialog.show()
 
             view.confirm.setOnClickListener {
@@ -47,16 +45,26 @@ class MainActivity : AppCompatActivity() {
                     val numOfRates = (1..1000).random().toString()
                     val ratingBar = (1..5).random().toFloat()
 
-                    val randomURL = (1..4).random()
+                    val randomURL = (0..3).random()
                     val url = itemList[randomURL].foodImage
 
                     val item = Item(foodName, foodType, foodPrice, foodDistance, url, ratingBar, numOfRates)
                     adapter.addItem(item)
+                    binding.recycleMain.scrollToPosition(0)
+                    dialog.dismiss()
                 }
                 else {
                     Toast.makeText(this, "please make sure to fill all inputs!", Toast.LENGTH_SHORT).show()
                 }
             }
         }
+    }
+
+    override fun onItemClicked() {
+        Toast.makeText(this, "Short click on food!", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onItemLongClicked() {
+
     }
 }
