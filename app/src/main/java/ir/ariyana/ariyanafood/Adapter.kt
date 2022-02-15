@@ -1,5 +1,6 @@
 package ir.ariyana.ariyanafood
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -9,29 +10,24 @@ import android.widget.RatingBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import ir.ariyana.ariyanafood.databinding.FoodCardBinding
 
 class Adapter(private val data : ArrayList<Item>, private val itemEvents : ItemEvents) : RecyclerView.Adapter<Adapter.ViewHolder>() {
 
-    inner class ViewHolder(itemView : View, private val context : Context) : RecyclerView.ViewHolder(itemView) {
-        val foodImage = itemView.findViewById<ImageView>(R.id.foodImage)
-        val foodName = itemView.findViewById<TextView>(R.id.foodName)
-        val foodType = itemView.findViewById<TextView>(R.id.foodType)
-        val foodPrice = itemView.findViewById<TextView>(R.id.foodPrice)
-        val foodDistance = itemView.findViewById<TextView>(R.id.foodDistance)
-        val ratingBar = itemView.findViewById<RatingBar>(R.id.ratingBar)
-        val numberOfRates = itemView.findViewById<TextView>(R.id.numberOfRates)
+    inner class ViewHolder(private val binding : FoodCardBinding) : RecyclerView.ViewHolder(binding.root) {
 
+        @SuppressLint("SetTextI18n")
         fun bindData(position: Int) {
-            foodName.text = data[position].foodName
-            foodType.text = data[position].foodType
-            foodPrice.text = data[position].foodPrice + " VIP"
-            foodDistance.text = data[position].foodDistance + " Miles"
-            ratingBar.rating = data[position].ratingBar
-            numberOfRates.text = data[position].numberOfRates + " Ratings"
+            binding.foodName.text = data[position].foodName
+            binding.foodType.text = data[position].foodType
+            binding.foodPrice.text = data[position].foodPrice + " VIP"
+            binding.foodDistance.text = data[position].foodDistance + " Miles"
+            binding.ratingBar.rating = data[position].ratingBar
+            binding.numberOfRates.text = data[position].numberOfRates + " Ratings"
             Glide
-                .with(context)
+                .with(binding.root.context)
                 .load(data[position].foodImage)
-                .into(foodImage)
+                .into(binding.foodImage)
 
             itemView.setOnClickListener {
                 itemEvents.onItemClicked(data[adapterPosition], adapterPosition)
@@ -46,8 +42,8 @@ class Adapter(private val data : ArrayList<Item>, private val itemEvents : ItemE
     }
 
     override fun onCreateViewHolder(parent : ViewGroup, viewType : Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.food_card, parent, false)
-        return ViewHolder(view, parent.context)
+        val binding = FoodCardBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder : ViewHolder, position : Int) {
