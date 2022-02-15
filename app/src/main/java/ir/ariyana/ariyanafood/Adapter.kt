@@ -75,6 +75,12 @@ class Adapter(private val data : ArrayList<Item>, private val itemEvents : ItemE
         notifyItemChanged(itemPosition)
     }
 
+    fun setData(itemsList : ArrayList<Item>){
+        data.clear()
+        data.addAll(itemsList)
+        notifyDataSetChanged()
+    }
+
     interface ItemEvents {
         // 1. create interface in adapter
         // 2. get an object of interface in args of adapter

@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ir.ariyana.ariyanafood.databinding.ActivityMainBinding
@@ -13,8 +14,8 @@ import ir.ariyana.ariyanafood.databinding.UpdateItemBinding
 
 class MainActivity : AppCompatActivity(), Adapter.ItemEvents {
 
-    lateinit var binding : ActivityMainBinding
-    lateinit var adapter : Adapter
+    private lateinit var binding : ActivityMainBinding
+    private lateinit var adapter : Adapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,7 +23,7 @@ class MainActivity : AppCompatActivity(), Adapter.ItemEvents {
         setContentView(binding.root)
 
         val itemList = arrayListOf(
-            Item("Pizza", "Persian Pizz", "$32 VIP", "32", "https://lh3.googleusercontent.com/p/AF1QipNlkgfsC62K3EYU3b-zsG7OTASXXbni9pVBV7ZI=s1600-w400", 4.5f, "110"),
+            Item("Pizza", "Persian Pizz", "$32", "32", "https://lh3.googleusercontent.com/p/AF1QipNlkgfsC62K3EYU3b-zsG7OTASXXbni9pVBV7ZI=s1600-w400", 4.5f, "110"),
             Item("Hamburger", "US Hamburger", "$17", "81", "https://static.toiimg.com/thumb/79693966.cms?width=680&height=512&imgsize=150513", 4f, "181"),
             Item("Sushi", "Chinese", "$60", "200", "https://img.static-rmg.be/a/view/q75/w960/h520/2163026/super-sushi-2-960x520.jpg", 3.5f, "254"),
             Item("Kebab", "Turkish", "$90", "15", "https://www.okokorecepten.nl/i/recepten/kookboeken/2015/echte-manen-dieet-2/doner-kebab-light-500.jpg", 5f, "1500"),
@@ -32,6 +33,7 @@ class MainActivity : AppCompatActivity(), Adapter.ItemEvents {
         binding.recycleMain.adapter = adapter
         binding.recycleMain.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
 
+        // add new item code is here ->
         binding.addItem.setOnClickListener {
             val dialog = AlertDialog.Builder(this).create()
             val view = NewItemBinding.inflate(layoutInflater)
@@ -61,8 +63,24 @@ class MainActivity : AppCompatActivity(), Adapter.ItemEvents {
                 }
             }
         }
+
+        // search for items code ->
+        binding.searchTextInput.addTextChangedListener { inputText ->
+            if(inputText!!.isNotEmpty()) {
+                // filter data
+                val itemsClone = itemList.clone() as ArrayList<Item>
+                val filteredList = itemsClone.filter { item ->
+                    item.foodName.lowercase().contains(inputText)
+                }
+                adapter.setData(ArrayList(filteredList))
+            }
+            else {
+                adapter.setData(itemList.clone() as ArrayList<Item>)
+            }
+        }
     }
 
+    // update item code ->
     override fun onItemClicked(item: Item, position: Int) {
         val dialog = AlertDialog.Builder(this).create()
         val view = UpdateItemBinding.inflate(layoutInflater)
@@ -94,6 +112,7 @@ class MainActivity : AppCompatActivity(), Adapter.ItemEvents {
         }
     }
 
+    // delete item code ->
     override fun onItemLongClicked(item : Item, position : Int) {
         val dialog = AlertDialog.Builder(this).create()
         val view = RemoveItemBinding.inflate(layoutInflater)
