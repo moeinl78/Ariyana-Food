@@ -23,10 +23,10 @@ class MainActivity : AppCompatActivity(), Adapter.ItemEvents {
         setContentView(binding.root)
 
         val itemList = arrayListOf(
-            Item("Pizza", "Persian Pizz", "$32", "32", "https://lh3.googleusercontent.com/p/AF1QipNlkgfsC62K3EYU3b-zsG7OTASXXbni9pVBV7ZI=s1600-w400", 4.5f, "110"),
-            Item("Hamburger", "US Hamburger", "$17", "81", "https://static.toiimg.com/thumb/79693966.cms?width=680&height=512&imgsize=150513", 4f, "181"),
-            Item("Sushi", "Chinese", "$60", "200", "https://img.static-rmg.be/a/view/q75/w960/h520/2163026/super-sushi-2-960x520.jpg", 3.5f, "254"),
-            Item("Kebab", "Turkish", "$90", "15", "https://www.okokorecepten.nl/i/recepten/kookboeken/2015/echte-manen-dieet-2/doner-kebab-light-500.jpg", 5f, "1500"),
+            Item(null, "Pizza", "Persian Pizz", "$32", "32", "https://lh3.googleusercontent.com/p/AF1QipNlkgfsC62K3EYU3b-zsG7OTASXXbni9pVBV7ZI=s1600-w400", 4.5f, "110"),
+            Item(null, "Hamburger", "US Hamburger", "$17", "81", "https://static.toiimg.com/thumb/79693966.cms?width=680&height=512&imgsize=150513", 4f, "181"),
+            Item(null, "Sushi", "Chinese", "$60", "200", "https://img.static-rmg.be/a/view/q75/w960/h520/2163026/super-sushi-2-960x520.jpg", 3.5f, "254"),
+            Item(null, "Kebab", "Turkish", "$90", "15", "https://www.okokorecepten.nl/i/recepten/kookboeken/2015/echte-manen-dieet-2/doner-kebab-light-500.jpg", 5f, "1500"),
         )
 
         adapter = Adapter(itemList.clone() as ArrayList<Item>, this)
@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity(), Adapter.ItemEvents {
                     val randomURL = (0..3).random()
                     val url = itemList[randomURL].foodImage
 
-                    val item = Item(foodName, foodType, foodPrice, foodDistance, url, ratingBar, numOfRates)
+                    val item = Item(null, foodName, foodType, foodPrice, foodDistance, url, ratingBar, numOfRates)
                     adapter.addItem(item)
                     binding.recycleMain.scrollToPosition(0)
                     dialog.dismiss()
@@ -101,7 +101,7 @@ class MainActivity : AppCompatActivity(), Adapter.ItemEvents {
                 val foodPrice = view.updatePriceInput.text.toString()
                 val foodDistance = view.updateDistanceInput.text.toString()
 
-                val updatedItem = Item(foodName, foodType, foodPrice, foodDistance, item.foodImage, item.ratingBar, item.numberOfRates)
+                val updatedItem = Item(null, foodName, foodType, foodPrice, foodDistance, item.foodImage, item.ratingBar, item.numberOfRates)
 
                 adapter.updateItem(updatedItem, position)
                 dialog.dismiss()
