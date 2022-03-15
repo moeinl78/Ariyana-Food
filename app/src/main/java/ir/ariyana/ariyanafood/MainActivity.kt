@@ -65,7 +65,7 @@ class MainActivity : AppCompatActivity(), Adapter.ItemEvents {
     // read all data from database
     private fun receiveItems() {
 
-        val itemList = itemDAO.receiveItems()
+        val itemList = ArrayList(itemDAO.receiveItems())
 
         adapter = Adapter(itemList.clone() as ArrayList<Item>, this)
         binding.recycleMain.adapter = adapter

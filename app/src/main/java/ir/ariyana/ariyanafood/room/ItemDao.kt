@@ -17,7 +17,7 @@ interface ItemDao {
     fun removeItem(item : Item)
 
     @Query("SELECT * FROM table_food")
-    fun receiveItems() : ArrayList<Item>
+    fun receiveItems() : List<Item>
 
     @Query("SELECT * FROM table_food WHERE foodName LIKE '%'||:info||'%'")
     fun searchItem(info : String) : ArrayList<Item>
