@@ -1,5 +1,6 @@
 package ir.ariyana.ariyanafood
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
@@ -11,27 +12,35 @@ import ir.ariyana.ariyanafood.databinding.ActivityMainBinding
 import ir.ariyana.ariyanafood.databinding.NewItemBinding
 import ir.ariyana.ariyanafood.databinding.RemoveItemBinding
 import ir.ariyana.ariyanafood.databinding.UpdateItemBinding
+import ir.ariyana.ariyanafood.room.AriyanaDB
+import ir.ariyana.ariyanafood.room.ItemDao
 
 class MainActivity : AppCompatActivity(), Adapter.ItemEvents {
 
     private lateinit var binding : ActivityMainBinding
     private lateinit var adapter : Adapter
+    private lateinit var itemDAO : ItemDao
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val itemList = arrayListOf(
-            Item(null, "Pizza", "Persian Pizz", "$32", "32", "https://lh3.googleusercontent.com/p/AF1QipNlkgfsC62K3EYU3b-zsG7OTASXXbni9pVBV7ZI=s1600-w400", 4.5f, "110"),
-            Item(null, "Hamburger", "US Hamburger", "$17", "81", "https://static.toiimg.com/thumb/79693966.cms?width=680&height=512&imgsize=150513", 4f, "181"),
-            Item(null, "Sushi", "Chinese", "$60", "200", "https://img.static-rmg.be/a/view/q75/w960/h520/2163026/super-sushi-2-960x520.jpg", 3.5f, "254"),
-            Item(null, "Kebab", "Turkish", "$90", "15", "https://www.okokorecepten.nl/i/recepten/kookboeken/2015/echte-manen-dieet-2/doner-kebab-light-500.jpg", 5f, "1500"),
-        )
+        // save state of the program using sharedPreferences
+        val sharedPreferences = getSharedPreferences("app", Context.MODE_PRIVATE)
+        if(sharedPreferences.getBoolean("app_first_run", true)){
+            appFirstRun()
+            sharedPreferences
+                .edit()
+                .putBoolean("app_first_run", false)
+                .apply()
+        }
 
-        adapter = Adapter(itemList.clone() as ArrayList<Item>, this)
-        binding.recycleMain.adapter = adapter
-        binding.recycleMain.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
+        // access database via itemDao
+        itemDAO = AriyanaDB.createDataBase(this).itemDao
+
+        // call receiveItems function
+        receiveItems()
 
         // add new item code is here ->
         binding.addItem.setOnClickListener {
@@ -40,43 +49,45 @@ class MainActivity : AppCompatActivity(), Adapter.ItemEvents {
             dialog.setView(view.root)
             dialog.setCancelable(true)
             dialog.show()
-
-            view.confirm.setOnClickListener {
-                if (view.nameInput.length() > 0 && view.typeInput.length() > 0 && view.priceInput.length() > 0 && view.distanceInput.length() > 0) {
-                    val foodName = view.nameInput.text.toString()
-                    val foodType = view.typeInput.text.toString()
-                    val foodPrice = view.priceInput.text.toString()
-                    val foodDistance = view.distanceInput.text.toString()
-                    val numOfRates = (1..1000).random().toString()
-                    val ratingBar = (1..5).random().toFloat()
-
-                    val randomURL = (0..3).random()
-                    val url = itemList[randomURL].foodImage
-
-                    val item = Item(null, foodName, foodType, foodPrice, foodDistance, url, ratingBar, numOfRates)
-                    adapter.addItem(item)
-                    binding.recycleMain.scrollToPosition(0)
-                    dialog.dismiss()
-                }
-                else {
-                    Toast.makeText(this, "please make sure to fill all inputs!", Toast.LENGTH_SHORT).show()
-                }
-            }
         }
 
         // search for items code ->
         binding.searchTextInput.addTextChangedListener { inputText ->
             if(inputText!!.isNotEmpty()) {
                 // filter data
-                val itemsClone = itemList.clone() as ArrayList<Item>
-                val filteredList = itemsClone.filter { item ->
-                    item.foodName.lowercase().contains(inputText)
-                }
-                adapter.setData(ArrayList(filteredList))
             }
             else {
-                adapter.setData(itemList.clone() as ArrayList<Item>)
+
             }
+        }
+    }
+
+    // read all data from database
+    private fun receiveItems() {
+
+        val itemList = itemDAO.receiveItems()
+
+        adapter = Adapter(itemList.clone() as ArrayList<Item>, this)
+        binding.recycleMain.adapter = adapter
+        binding.recycleMain.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
+
+    }
+
+    // check if it's first time program is running
+    private fun appFirstRun() {
+        // add static data for first run if you want!
+        // using map or create a method to add array list of items into db
+        val data : ArrayList<Item> = arrayListOf(
+            Item(1, "Hamburger", "US Fast Food", "17.5", "1000", "https://upload.wikimedia.org/wikipedia/commons/4/47/Hamburger_%28black_bg%29.jpg", 4.5f, "930"),
+            Item(2, "Grilled Fish", "East Asia", "28", "932", "https://static.toiimg.com/photo/52669221.cms", 3.5f, "1450"),
+            Item(3, "Lasagna", "Italian", "24", "430", "https://cafedelites.com/wp-content/uploads/2018/01/Mamas-Best-Lasagna-IMAGE-43.jpg", 4f, "2045"),
+            Item(4, "Pizza", "Italian", "70", "430", "https://upload.wikimedia.org/wikipedia/commons/a/a3/Eq_it-na_pizza-margherita_sep2005_sml.jpg", 3f, "1025"),
+            Item(5, "Sushi", "Japanese", "110", "980", "https://rimage.gnst.jp/livejapan.com/public/article/detail/a/00/00/a0000370/img/basic/a0000370_main.jpg?20201002142956&q=80&rw=750&rh=536", 1f, "6487"),
+            Item(6, "Roasted Fish", "Iranian", "17.5", "5", "https://static01.nyt.com/images/2021/09/20/dining/nd-mahi/nd-mahi-articleLarge.jpg", 2f, "7800"),
+            Item(7, "Fried Chicken", "Iranian", "17.5", "5", "https://static.toiimg.com/thumb/61589069.cms?width=1200&height=900", 5f, "2"),
+        )
+        data.map { item ->
+            itemDAO.insertItem(item)
         }
     }
 
@@ -94,21 +105,7 @@ class MainActivity : AppCompatActivity(), Adapter.ItemEvents {
         view.updateDistanceInput.setText(item.foodDistance)
 
         view.updateConfirm.setOnClickListener {
-            if (view.updateNameInput.length() > 0 && view.updateTypeInput.length() > 0 && view.updatePriceInput.length() > 0 && view.updateDistanceInput.length() > 0){
 
-                val foodName = view.updateNameInput.text.toString()
-                val foodType = view.updateTypeInput.text.toString()
-                val foodPrice = view.updatePriceInput.text.toString()
-                val foodDistance = view.updateDistanceInput.text.toString()
-
-                val updatedItem = Item(null, foodName, foodType, foodPrice, foodDistance, item.foodImage, item.ratingBar, item.numberOfRates)
-
-                adapter.updateItem(updatedItem, position)
-                dialog.dismiss()
-            }
-            else {
-                Toast.makeText(this, "please enter valid data!", Toast.LENGTH_SHORT).show()
-            }
         }
     }
 
@@ -123,6 +120,7 @@ class MainActivity : AppCompatActivity(), Adapter.ItemEvents {
         view.removeAccept.setOnClickListener {
             dialog.dismiss()
             adapter.removeItem(item, position)
+            itemDAO.removeItem(item)
         }
 
         view.removeDecline.setOnClickListener {

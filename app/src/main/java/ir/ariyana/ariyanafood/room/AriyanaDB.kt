@@ -15,17 +15,18 @@ abstract class AriyanaDB : RoomDatabase(){
 
     companion object {
         private var database : AriyanaDB? = null
-        fun getDataBase(context : Context) : AriyanaDB {
+        fun createDataBase(context : Context) : AriyanaDB {
 
-            var instance = database
-            if (instance == null) {
-                instance = Room.databaseBuilder(
+            if (database == null) {
+                database = Room.databaseBuilder(
                     context.applicationContext,
                     AriyanaDB::class.java,
                     "items.db"
-                ).build()
+                )
+                    .allowMainThreadQueries()
+                    .build()
             }
-            return instance
+            return database!!
         }
     }
 }
