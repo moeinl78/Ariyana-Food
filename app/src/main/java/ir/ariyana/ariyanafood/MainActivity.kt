@@ -44,36 +44,7 @@ class MainActivity : AppCompatActivity(), Adapter.ItemEvents {
 
         // add new item code is here ->
         binding.addItem.setOnClickListener {
-            val dialog = AlertDialog.Builder(this).create()
-            val view = NewItemBinding.inflate(layoutInflater)
-            dialog.setView(view.root)
-            dialog.setCancelable(true)
-            dialog.show()
-
-            view.confirm.setOnClickListener {
-                val foodName = view.nameInput.text.toString()
-                val foodType = view.typeInput.text.toString()
-                val foodPrice = view.priceInput.text.toString()
-                val foodDistance = view.distanceInput.text.toString()
-
-                val images = arrayListOf(
-                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT4G8qi5-o-0jzyG4Rylf8D2fJAxjvM4JSRhg&usqp=CAU",
-                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS2egI-pAraQ5Ofzt4zSMW7Y6F1UCnDwsXjXg&usqp=CAU",
-                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS24wvA9ozipJc5-IStQrqZIo_a3urpEZGIGA&usqp=CAU",
-                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQavZS77mInKpbajzhaGj9JG6K4gJJt4ndKfw&usqp=CAU",
-                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7WNX9WsTqIEZcsxSMnCZ_ufaHA5XlLWVhyQ&usqp=CAU",
-                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7Wbvermj92gElygU8IU7_brGqqas0fkWacw&usqp=CAU",
-                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQwvcaANl_bB2oLTap3BrRoGw7H68_05tN1Dg&usqp=CAU",
-                )
-                val newImage = images.random()
-                val rating = (1..5).random().toFloat()
-                val rates = (1..1000).random()
-
-                val newItem = Item(null, foodName, foodType, foodPrice, foodDistance, newImage, rating, "$rates")
-                adapter.addItem(newItem)
-                itemDAO.insertItem(newItem)
-                dialog.dismiss()
-            }
+            addNewItem()
         }
 
         // search for items code ->
@@ -84,6 +55,42 @@ class MainActivity : AppCompatActivity(), Adapter.ItemEvents {
             else {
 
             }
+        }
+    }
+
+    // add new item to database
+    private fun addNewItem() {
+
+        val dialog = AlertDialog.Builder(this).create()
+        val view = NewItemBinding.inflate(layoutInflater)
+        dialog.setView(view.root)
+        dialog.setCancelable(true)
+        dialog.show()
+
+        view.confirm.setOnClickListener {
+            val foodName = view.nameInput.text.toString()
+            val foodType = view.typeInput.text.toString()
+            val foodPrice = view.priceInput.text.toString()
+            val foodDistance = view.distanceInput.text.toString()
+
+            val images = arrayListOf(
+                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT4G8qi5-o-0jzyG4Rylf8D2fJAxjvM4JSRhg&usqp=CAU",
+                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS2egI-pAraQ5Ofzt4zSMW7Y6F1UCnDwsXjXg&usqp=CAU",
+                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS24wvA9ozipJc5-IStQrqZIo_a3urpEZGIGA&usqp=CAU",
+                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQavZS77mInKpbajzhaGj9JG6K4gJJt4ndKfw&usqp=CAU",
+                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7WNX9WsTqIEZcsxSMnCZ_ufaHA5XlLWVhyQ&usqp=CAU",
+                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7Wbvermj92gElygU8IU7_brGqqas0fkWacw&usqp=CAU",
+                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQwvcaANl_bB2oLTap3BrRoGw7H68_05tN1Dg&usqp=CAU",
+            )
+            val newImage = images.random()
+            val rating = (1..5).random().toFloat()
+            val rates = (1..1000).random()
+
+            val newItem = Item(null, foodName, foodType, foodPrice, foodDistance, newImage, rating, "$rates")
+            adapter.addItem(newItem)
+            itemDAO.insertItem(newItem)
+            dialog.dismiss()
+            binding.recycleMain.scrollToPosition(adapter.itemCount)
         }
     }
 

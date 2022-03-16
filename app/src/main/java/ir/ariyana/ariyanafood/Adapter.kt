@@ -56,8 +56,8 @@ class Adapter(private val data : ArrayList<Item>, private val itemEvents : ItemE
 
     // call this function from adapter to add one item
     fun addItem(newItem : Item) {
-        data.add(0, newItem)
-        notifyItemInserted(0)
+        data.add(data.size, newItem)
+        notifyItemInserted(data.size)
     }
 
     // call this function from adapter to remove one item
