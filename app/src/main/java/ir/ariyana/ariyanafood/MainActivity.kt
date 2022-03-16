@@ -26,6 +26,9 @@ class MainActivity : AppCompatActivity(), Adapter.ItemEvents {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // access database via itemDao
+        itemDAO = AriyanaDB.createDataBase(this).itemDao
+
         // save state of the program using sharedPreferences
         val sharedPreferences = getSharedPreferences("app", Context.MODE_PRIVATE)
         if(sharedPreferences.getBoolean("app_first_run", true)){
@@ -35,9 +38,6 @@ class MainActivity : AppCompatActivity(), Adapter.ItemEvents {
                 .putBoolean("app_first_run", false)
                 .apply()
         }
-
-        // access database via itemDao
-        itemDAO = AriyanaDB.createDataBase(this).itemDao
 
         // call receiveItems function
         receiveItems()
@@ -49,6 +49,31 @@ class MainActivity : AppCompatActivity(), Adapter.ItemEvents {
             dialog.setView(view.root)
             dialog.setCancelable(true)
             dialog.show()
+
+            view.confirm.setOnClickListener {
+                val foodName = view.nameInput.text.toString()
+                val foodType = view.typeInput.text.toString()
+                val foodPrice = view.priceInput.text.toString()
+                val foodDistance = view.distanceInput.text.toString()
+
+                val images = arrayListOf(
+                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT4G8qi5-o-0jzyG4Rylf8D2fJAxjvM4JSRhg&usqp=CAU",
+                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS2egI-pAraQ5Ofzt4zSMW7Y6F1UCnDwsXjXg&usqp=CAU",
+                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS24wvA9ozipJc5-IStQrqZIo_a3urpEZGIGA&usqp=CAU",
+                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQavZS77mInKpbajzhaGj9JG6K4gJJt4ndKfw&usqp=CAU",
+                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7WNX9WsTqIEZcsxSMnCZ_ufaHA5XlLWVhyQ&usqp=CAU",
+                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7Wbvermj92gElygU8IU7_brGqqas0fkWacw&usqp=CAU",
+                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQwvcaANl_bB2oLTap3BrRoGw7H68_05tN1Dg&usqp=CAU",
+                )
+                val newImage = images.random()
+                val rating = (1..5).random().toFloat()
+                val rates = (1..1000).random()
+
+                val newItem = Item(null, foodName, foodType, foodPrice, foodDistance, newImage, rating, "$rates")
+                adapter.addItem(newItem)
+                itemDAO.insertItem(newItem)
+                dialog.dismiss()
+            }
         }
 
         // search for items code ->
@@ -105,7 +130,15 @@ class MainActivity : AppCompatActivity(), Adapter.ItemEvents {
         view.updateDistanceInput.setText(item.foodDistance)
 
         view.updateConfirm.setOnClickListener {
+            val foodName = view.updateNameInput.text.toString()
+            val foodType = view.updateTypeInput.text.toString()
+            val foodPrice = view.updatePriceInput.text.toString()
+            val foodDistance = view.updateDistanceInput.text.toString()
 
+            val updatedItem = Item(item.id, foodName, foodType, foodPrice, foodDistance, item.foodImage, item.ratingBar, item.numberOfRates)
+            adapter.updateItem(updatedItem, position)
+            itemDAO.updateItem(updatedItem)
+            dialog.dismiss()
         }
     }
 

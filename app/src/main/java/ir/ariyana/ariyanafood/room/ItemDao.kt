@@ -20,5 +20,5 @@ interface ItemDao {
     fun receiveItems() : List<Item>
 
     @Query("SELECT * FROM table_food WHERE foodName LIKE '%'||:info||'%'")
-    fun searchItem(info : String) : ArrayList<Item>
+    fun searchItem(info : String) : List<Item>
 }
