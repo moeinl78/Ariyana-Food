@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity(), Adapter.ItemEvents {
         }
 
         // call receiveItems function
-        receiveItems()
+        receiveDBItems()
 
         // add new item code is here ->
         binding.addItem.setOnClickListener {
@@ -50,10 +50,12 @@ class MainActivity : AppCompatActivity(), Adapter.ItemEvents {
         // search for items code ->
         binding.searchTextInput.addTextChangedListener { inputText ->
             if(inputText!!.isNotEmpty()) {
-                // filter data
+                val items = ArrayList(itemDAO.searchItem(inputText.toString()))
+                adapter.setData(items)
             }
             else {
-
+                val items = ArrayList(itemDAO.receiveItems())
+                adapter.setData(items)
             }
         }
     }
@@ -95,7 +97,7 @@ class MainActivity : AppCompatActivity(), Adapter.ItemEvents {
     }
 
     // read all data from database
-    private fun receiveItems() {
+    private fun receiveDBItems() {
 
         val itemList = ArrayList(itemDAO.receiveItems())
 
