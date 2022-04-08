@@ -1,7 +1,7 @@
-package ir.ariyana.ariyanafood.room
+package ir.ariyana.ariyanafood.model.room
 
 import androidx.room.*
-import ir.ariyana.ariyanafood.Item
+import ir.ariyana.ariyanafood.model.data.Item
 
 //data access object
 @Dao

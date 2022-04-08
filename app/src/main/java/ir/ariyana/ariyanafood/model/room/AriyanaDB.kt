@@ -1,10 +1,10 @@
-package ir.ariyana.ariyanafood.room
+package ir.ariyana.ariyanafood.model.room
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import ir.ariyana.ariyanafood.Item
+import ir.ariyana.ariyanafood.model.data.Item
 
 // don't set exportSchema to true for security
 @Database(version = 1, exportSchema = true, entities = [Item::class])

@@ -1,9 +1,8 @@
-package ir.ariyana.ariyanafood
+package ir.ariyana.ariyanafood.ui
 
 import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -12,14 +11,19 @@ import ir.ariyana.ariyanafood.databinding.ActivityMainBinding
 import ir.ariyana.ariyanafood.databinding.NewItemBinding
 import ir.ariyana.ariyanafood.databinding.RemoveItemBinding
 import ir.ariyana.ariyanafood.databinding.UpdateItemBinding
-import ir.ariyana.ariyanafood.room.AriyanaDB
-import ir.ariyana.ariyanafood.room.ItemDao
+import ir.ariyana.ariyanafood.model.data.Item
+import ir.ariyana.ariyanafood.model.room.AriyanaDB
+import ir.ariyana.ariyanafood.model.room.ItemDao
+import ir.ariyana.ariyanafood.presenters.main.MainContract
+import ir.ariyana.ariyanafood.presenters.main.MainPresenter
+import ir.ariyana.ariyanafood.ui.adapter.Adapter
 
-class MainActivity : AppCompatActivity(), Adapter.ItemEvents {
+class MainActivity : AppCompatActivity(), Adapter.ItemEvents, MainContract.View {
 
     private lateinit var binding : ActivityMainBinding
     private lateinit var adapter : Adapter
     private lateinit var itemDAO : ItemDao
+    private lateinit var presenter : MainPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,19 +32,17 @@ class MainActivity : AppCompatActivity(), Adapter.ItemEvents {
 
         // access database via itemDao
         itemDAO = AriyanaDB.createDataBase(this).itemDao
+        presenter = MainPresenter(itemDAO)
 
         // save state of the program using sharedPreferences
         val sharedPreferences = getSharedPreferences("app", Context.MODE_PRIVATE)
         if(sharedPreferences.getBoolean("app_first_run", true)){
-            appFirstRun()
+            presenter.appFirstRun()
             sharedPreferences
                 .edit()
                 .putBoolean("app_first_run", false)
                 .apply()
         }
-
-        // call receiveItems function
-        receiveDBItems()
 
         // add new item code is here ->
         binding.addItem.setOnClickListener {
@@ -49,14 +51,7 @@ class MainActivity : AppCompatActivity(), Adapter.ItemEvents {
 
         // search for items code ->
         binding.searchTextInput.addTextChangedListener { inputText ->
-            if(inputText!!.isNotEmpty()) {
-                val items = ArrayList(itemDAO.searchItem(inputText.toString()))
-                adapter.setData(items)
-            }
-            else {
-                val items = ArrayList(itemDAO.receiveItems())
-                adapter.setData(items)
-            }
+            presenter.onItemSearch(inputText.toString())
         }
     }
 
@@ -89,39 +84,9 @@ class MainActivity : AppCompatActivity(), Adapter.ItemEvents {
             val rates = (1..1000).random()
 
             val newItem = Item(null, foodName, foodType, foodPrice, foodDistance, newImage, rating, "$rates")
-            adapter.addItem(newItem)
-            itemDAO.insertItem(newItem)
+            presenter.onAddButtonClicked(newItem)
             dialog.dismiss()
             binding.recycleMain.scrollToPosition(adapter.itemCount)
-        }
-    }
-
-    // read all data from database
-    private fun receiveDBItems() {
-
-        val itemList = ArrayList(itemDAO.receiveItems())
-
-        adapter = Adapter(itemList.clone() as ArrayList<Item>, this)
-        binding.recycleMain.adapter = adapter
-        binding.recycleMain.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
-
-    }
-
-    // check if it's first time program is running
-    private fun appFirstRun() {
-        // add static data for first run if you want!
-        // using map or create a method to add array list of items into db
-        val data : ArrayList<Item> = arrayListOf(
-            Item(1, "Hamburger", "US Fast Food", "17.5", "1000", "https://upload.wikimedia.org/wikipedia/commons/4/47/Hamburger_%28black_bg%29.jpg", 4.5f, "930"),
-            Item(2, "Grilled Fish", "East Asia", "28", "932", "https://static.toiimg.com/photo/52669221.cms", 3.5f, "1450"),
-            Item(3, "Lasagna", "Italian", "24", "430", "https://cafedelites.com/wp-content/uploads/2018/01/Mamas-Best-Lasagna-IMAGE-43.jpg", 4f, "2045"),
-            Item(4, "Pizza", "Italian", "70", "430", "https://upload.wikimedia.org/wikipedia/commons/a/a3/Eq_it-na_pizza-margherita_sep2005_sml.jpg", 3f, "1025"),
-            Item(5, "Sushi", "Japanese", "110", "980", "https://rimage.gnst.jp/livejapan.com/public/article/detail/a/00/00/a0000370/img/basic/a0000370_main.jpg?20201002142956&q=80&rw=750&rh=536", 1f, "6487"),
-            Item(6, "Roasted Fish", "Iranian", "17.5", "5", "https://static01.nyt.com/images/2021/09/20/dining/nd-mahi/nd-mahi-articleLarge.jpg", 2f, "7800"),
-            Item(7, "Fried Chicken", "Iranian", "17.5", "5", "https://static.toiimg.com/thumb/61589069.cms?width=1200&height=900", 5f, "2"),
-        )
-        data.map { item ->
-            itemDAO.insertItem(item)
         }
     }
 
@@ -145,8 +110,7 @@ class MainActivity : AppCompatActivity(), Adapter.ItemEvents {
             val foodDistance = view.updateDistanceInput.text.toString()
 
             val updatedItem = Item(item.id, foodName, foodType, foodPrice, foodDistance, item.foodImage, item.ratingBar, item.numberOfRates)
-            adapter.updateItem(updatedItem, position)
-            itemDAO.updateItem(updatedItem)
+            presenter.onUpdateClicked(updatedItem, position)
             dialog.dismiss()
         }
     }
@@ -161,12 +125,34 @@ class MainActivity : AppCompatActivity(), Adapter.ItemEvents {
 
         view.removeAccept.setOnClickListener {
             dialog.dismiss()
-            adapter.removeItem(item, position)
-            itemDAO.removeItem(item)
+            presenter.onDeleteClicked(item, position)
         }
 
         view.removeDecline.setOnClickListener {
             dialog.dismiss()
         }
+    }
+
+    // NEW
+    override fun showItems(items: List<Item>) {
+        adapter = Adapter(ArrayList(items), this)
+        binding.recycleMain.adapter = adapter
+        binding.recycleMain.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
+    }
+
+    override fun reloadItems(items: List<Item>) {
+        adapter.setData(ArrayList(items))
+    }
+
+    override fun addItem(item: Item) {
+        adapter.addItem(item)
+    }
+
+    override fun removeItem(item: Item, position: Int) {
+        adapter.removeItem(item, position)
+    }
+
+    override fun updateItem(item: Item, position: Int) {
+        adapter.updateItem(item, position)
     }
 }

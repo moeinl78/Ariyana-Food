@@ -1,4 +1,4 @@
-package ir.ariyana.ariyanafood
+package ir.ariyana.ariyanafood.model.data
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

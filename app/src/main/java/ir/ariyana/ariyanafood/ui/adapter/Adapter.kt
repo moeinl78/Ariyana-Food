@@ -1,16 +1,12 @@
-package ir.ariyana.ariyanafood
+package ir.ariyana.ariyanafood.ui.adapter
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.RatingBar
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import ir.ariyana.ariyanafood.databinding.FoodCardBinding
+import ir.ariyana.ariyanafood.model.data.Item
 
 class Adapter(private val data : ArrayList<Item>, private val itemEvents : ItemEvents) : RecyclerView.Adapter<Adapter.ViewHolder>() {
 
