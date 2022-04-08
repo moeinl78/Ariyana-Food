@@ -22,7 +22,6 @@ class MainActivity : AppCompatActivity(), Adapter.ItemEvents, MainContract.View 
 
     private lateinit var binding : ActivityMainBinding
     private lateinit var adapter : Adapter
-    private lateinit var itemDAO : ItemDao
     private lateinit var presenter : MainPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,8 +30,9 @@ class MainActivity : AppCompatActivity(), Adapter.ItemEvents, MainContract.View 
         setContentView(binding.root)
 
         // access database via itemDao
-        itemDAO = AriyanaDB.createDataBase(this).itemDao
-        presenter = MainPresenter(itemDAO)
+        // send it to presenter
+        // don't use DAO in View
+        presenter = MainPresenter(AriyanaDB.createDataBase(this).itemDao)
 
         // save state of the program using sharedPreferences
         val sharedPreferences = getSharedPreferences("app", Context.MODE_PRIVATE)
@@ -44,6 +44,8 @@ class MainActivity : AppCompatActivity(), Adapter.ItemEvents, MainContract.View 
                 .apply()
         }
 
+        presenter.onAttach(this)
+
         // add new item code is here ->
         binding.addItem.setOnClickListener {
             addNewItem()
@@ -53,6 +55,11 @@ class MainActivity : AppCompatActivity(), Adapter.ItemEvents, MainContract.View 
         binding.searchTextInput.addTextChangedListener { inputText ->
             presenter.onItemSearch(inputText.toString())
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        presenter.onDestroy()
     }
 
     // add new item to database
@@ -133,7 +140,7 @@ class MainActivity : AppCompatActivity(), Adapter.ItemEvents, MainContract.View 
         }
     }
 
-    // NEW
+    // new methods from contract
     override fun showItems(items: List<Item>) {
         adapter = Adapter(ArrayList(items), this)
         binding.recycleMain.adapter = adapter
